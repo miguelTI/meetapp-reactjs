@@ -54,7 +54,20 @@ export default class Signup extends Component {
 
     return (
       <Container>
-        <Form initialData={meetup} onSubmit={handleSubmit}>
+        <Form
+          initialData={
+            meetup.avatar
+              ? meetup
+              : {
+                  ...meetup,
+                  avatar: {
+                    url:
+                      'https://imgplaceholder.com/900x300/222222/757575/glyphicon-picture',
+                  },
+                }
+          }
+          onSubmit={handleSubmit}
+        >
           <Input name="id" type="hidden" />
           <AvatarInput name="avatar_id" />
           <Input name="name" placeholder="Titulo do meetup" />

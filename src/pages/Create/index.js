@@ -17,9 +17,17 @@ export default function Signup() {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={handleSubmit}
+        initialData={{
+          avatar: {
+            url:
+              'https://imgplaceholder.com/900x300/222222/757575/glyphicon-picture',
+          },
+        }}
+      >
         <AvatarInput name="avatar_id" />
-        <Input name="name" placeholder="Titulo do meetup" />
+        <Input name="name" placeholder="Título do meetup" />
         <Input name="description" multiline placeholder="Descrição completa" />
         <Input name="date" type="date" placeholder="Data do meetup" />
         <Input name="locale" placeholder="Localização" />
