@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { MdAddCircleOutline, MdChevronRight } from 'react-icons/md';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import api from '~/services/api';
 
-import { setMeetupRequest } from '~/store/modules/meetup/actions';
 import { Container, Meetup, Right } from './styles';
 
 export default function Dashboard() {
-  const dispatch = useDispatch();
   const [meetups, setMeetups] = useState([]);
 
   useEffect(() => {
@@ -29,10 +26,6 @@ export default function Dashboard() {
 
     loadMeetups();
   }, []);
-
-  function handleSelectMeetup(meetup) {
-    dispatch(setMeetupRequest(meetup));
-  }
 
   return (
     <Container>
