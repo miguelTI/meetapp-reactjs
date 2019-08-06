@@ -66,7 +66,13 @@ export default class Details extends Component {
             </button>
           </Right>
         </header>
-        <Avatar src={meetup.avatar.url} />
+        <Avatar
+          src={
+            meetup.avatar
+              ? meetup.avatar.url
+              : 'https://imgplaceholder.com/900x300/222222/757575/glyphicon-picture'
+          }
+        />
         <Description>{meetup.description}</Description>
         <Info>
           <span>{meetup.formattedDate}</span>
