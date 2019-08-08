@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdAddCircleOutline } from 'react-icons/md';
-import { format, parseISO } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import { parseISO } from 'date-fns';
 import { Form, Input } from '@rocketseat/unform';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import ptBR from 'date-fns/locale/pt-BR';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import AvatarInput from '~/components/AvatarInput';
 
@@ -16,74 +18,70 @@ async function handleSubmit(data) {
   history.push('/dashboard');
 }
 
-export default class Signup extends Component {
-  state = {
-    loading: true,
-    meetup: {},
-  };
+function updateMeetup(meetup, setMeetup, date = null) {
+  const dateToUse = date || parseISO(meetup.date);
+  setMeetup({ ...meetup, date: dateToUse });
+}
 
-  async componentDidMount() {
-    const { match } = this.props;
+export default function Signup({ match }) {
+  registerLocale('pt-BR', ptBR);
+  const [meetup, setMeetup] = useState({});
+  const [loading, setLoading] = useState(true);
 
-    const meetupId = decodeURIComponent(match.params.meetupId);
-    const response = await api.get(`meetups/${meetupId}`);
+  useEffect(() => {
+    async function fetchMeetup() {
+      const meetupId = decodeURIComponent(match.params.meetupId);
+      const response = await api.get(`meetups/${meetupId}`);
 
-    const meetup = {
-      formattedDate: format(parseISO(response.data.date), "d 'de' MMMM", {
-        locale: pt,
-      }),
-      ...response.data,
-    };
-
-    this.setState({
-      meetup: meetup,
-      loading: false,
-    });
-  }
-
-  render() {
-    const { meetup, loading } = this.state;
-
-    if (loading) {
-      return (
-        <Container>
-          <div>Carregando</div>
-        </Container>
-      );
+      updateMeetup(response.data, setMeetup);
+      setLoading(false);
     }
 
+    fetchMeetup();
+  }, [match.params.meetupId]);
+
+  if (loading) {
     return (
       <Container>
-        <Form
-          initialData={
-            meetup.avatar
-              ? meetup
-              : {
-                  ...meetup,
-                  avatar: {
-                    url:
-                      'https://imgplaceholder.com/900x300/222222/757575/glyphicon-picture',
-                  },
-                }
-          }
-          onSubmit={handleSubmit}
-        >
-          <Input name="id" type="hidden" />
-          <AvatarInput name="avatar_id" />
-          <Input name="name" placeholder="Titulo do meetup" />
-          <Input
-            name="description"
-            multiline
-            placeholder="Descrição completa"
-          />
-          <Input name="date" type="date" placeholder="Data do meetup" />
-          <Input name="locale" placeholder="Localização" />
-          <button type="submit">
-            <MdAddCircleOutline size={16} color="#FFF" />
-            <span>Salvar meetup</span>
-          </button>
-        </Form>
+        <div>Carregando</div>
       </Container>
     );
   }
+
+  return (
+    <Container>
+      <Form
+        initialData={
+          meetup.avatar
+            ? meetup
+            : {
+                ...meetup,
+                avatar: {
+                  url:
+                    'https://imgplaceholder.com/900x300/222222/757575/glyphicon-picture',
+                },
+              }
+        }
+        onSubmit={handleSubmit}
+      >
+        <Input name="id" type="hidden" />
+        <AvatarInput name="avatar_id" />
+        <Input name="name" placeholder="Titulo do meetup" />
+        <Input name="description" multiline placeholder="Descrição completa" />
+        <Input name="date" type="hidden" />
+        <DatePicker
+          selected={meetup.date}
+          onChange={date => updateMeetup(meetup, setMeetup, date)}
+          locale="pt-BR"
+          dateFormat="Pp"
+          minDate={new Date()}
+        />
+        <Input name="locale" placeholder="Localização" />
+        <button type="submit">
+          <MdAddCircleOutline size={16} color="#FFF" />
+          <span>Salvar meetup</span>
+        </button>
+      </Form>
+    </Container>
+  );
 }
